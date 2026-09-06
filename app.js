@@ -1,16 +1,20 @@
 /* =====================================================
    DEWCLAW ECO-TOURS & SAFARIS
-   WEBSITE JAVASCRIPT
-   ===================================================== */
+   FINAL JAVASCRIPT
+===================================================== */
 
 
-/* ================= HEADER ================= */
+/* -----------------------------
+   HEADER
+----------------------------- */
 
 const header = document.getElementById("header");
 
 window.addEventListener("scroll", () => {
 
-  if (window.scrollY > 60) {
+  if (!header) return;
+
+  if (window.scrollY > 30) {
     header.classList.add("scrolled");
   } else {
     header.classList.remove("scrolled");
@@ -19,58 +23,83 @@ window.addEventListener("scroll", () => {
 });
 
 
-/* ================= MOBILE MENU ================= */
+/* -----------------------------
+   MOBILE MENU
+----------------------------- */
 
-const menuButton = document.getElementById("menuButton");
+const menuToggle = document.getElementById("menuToggle");
 const mobileMenu = document.getElementById("mobileMenu");
+const mobileClose = document.getElementById("mobileClose");
 
-menuButton.addEventListener("click", () => {
+if (menuToggle && mobileMenu) {
 
-  mobileMenu.classList.toggle("active");
+  menuToggle.addEventListener("click", () => {
+    mobileMenu.classList.add("active");
+    document.body.classList.add("menu-open");
+  });
 
-  if (mobileMenu.classList.contains("active")) {
-    menuButton.textContent = "×";
-  } else {
-    menuButton.textContent = "☰";
-  }
+}
 
-});
+if (mobileClose && mobileMenu) {
+
+  mobileClose.addEventListener("click", () => {
+    mobileMenu.classList.remove("active");
+    document.body.classList.remove("menu-open");
+  });
+
+}
 
 
-/* ================= CLOSE MOBILE MENU ================= */
+/* -----------------------------
+   CLOSE MOBILE MENU
+   WHEN LINK IS CLICKED
+----------------------------- */
 
 document.querySelectorAll(".mobile-menu a").forEach(link => {
 
   link.addEventListener("click", () => {
 
-    mobileMenu.classList.remove("active");
+    if (mobileMenu) {
+      mobileMenu.classList.remove("active");
+    }
 
-    menuButton.textContent = "☰";
+    document.body.classList.remove("menu-open");
 
   });
 
 });
 
 
-/* ================= SMOOTH SCROLL ================= */
+/* -----------------------------
+   SMOOTH SCROLL
+----------------------------- */
 
 document.querySelectorAll('a[href^="#"]').forEach(link => {
 
   link.addEventListener("click", function(event) {
 
-    const targetId =
-      this.getAttribute("href");
+    const targetId = this.getAttribute("href");
 
-    const target =
-      document.querySelector(targetId);
+    if (!targetId || targetId === "#") return;
+
+    const target = document.querySelector(targetId);
 
     if (!target) return;
 
     event.preventDefault();
 
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
+    const headerHeight = header
+      ? header.offsetHeight
+      : 0;
+
+    const targetPosition =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight;
+
+    window.scrollTo({
+      top: targetPosition,
+      behavior: "smooth"
     });
 
   });
@@ -78,15 +107,17 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 
-/* ================= SCROLL REVEAL ================= */
+/* -----------------------------
+   REVEAL ANIMATIONS
+----------------------------- */
 
 const revealElements =
   document.querySelectorAll(".reveal");
 
-const observer =
-  new IntersectionObserver(
+if ("IntersectionObserver" in window) {
 
-    (entries, observer) => {
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
 
       entries.forEach(entry => {
 
@@ -94,77 +125,98 @@ const observer =
 
           entry.target.classList.add("visible");
 
-          observer.unobserve(entry.target);
+          obs.unobserve(entry.target);
 
         }
 
       });
 
     },
-
     {
       threshold: 0.12
     }
-
   );
 
+  revealElements.forEach(element => {
+    observer.observe(element);
+  });
 
-revealElements.forEach(element => {
+} else {
 
-  observer.observe(element);
-
-});
-
-
-/* ================= CURRENT YEAR ================= */
-
-const year =
-  document.getElementById("year");
-
-if (year) {
-
-  year.textContent =
-    new Date().getFullYear();
+  revealElements.forEach(element => {
+    element.classList.add("visible");
+  });
 
 }
 
 
-/* ================= EXPERIENCE ENQUIRIES ================= */
+/* -----------------------------
+   CURRENT YEAR
+----------------------------- */
 
-document
-  .querySelectorAll(".card-link")
-  .forEach(button => {
+const yearElement = document.getElementById("year");
 
-    button.addEventListener("click", () => {
-
-      console.log(
-        "Dewclaw experience enquiry started."
-      );
-
-    });
-
-  });
+if (yearElement) {
+  yearElement.textContent = new Date().getFullYear();
+}
 
 
-/* ================= WHATSAPP TRACKING ================= */
+/* -----------------------------
+   WHATSAPP TRACKING
+----------------------------- */
 
-document
-  .querySelectorAll('a[href*="wa.me"]')
-  .forEach(button => {
+document.querySelectorAll(
+  'a[href*="wa.me"]'
+).forEach(link => {
 
-    button.addEventListener("click", () => {
+  link.addEventListener("click", () => {
 
-      console.log(
-        "WhatsApp enquiry button clicked."
-      );
-
-    });
+    console.log(
+      "Dewclaw WhatsApp enquiry:",
+      link.href
+    );
 
   });
 
+});
 
-/* ================= PAGE READY ================= */
+
+/* -----------------------------
+   EXPERIENCE ENQUIRIES
+----------------------------- */
+
+document.querySelectorAll(
+  ".package-link, .mini-card a"
+).forEach(link => {
+
+  link.addEventListener("click", () => {
+
+    const card =
+      link.closest(".experience-card, .mini-card");
+
+    if (!card) return;
+
+    const title =
+      card.querySelector("h3");
+
+    if (title) {
+
+      console.log(
+        "Experience enquiry:",
+        title.textContent.trim()
+      );
+
+    }
+
+  });
+
+});
+
+
+/* -----------------------------
+   PAGE READY
+----------------------------- */
 
 console.log(
-  "Dewclaw Eco-Tours & Safaris concept website loaded successfully."
+  "Dewclaw Eco-Tours & Safaris demo loaded successfully."
 );
