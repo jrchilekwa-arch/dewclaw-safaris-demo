@@ -1085,3 +1085,7 @@ p {
   }
 
    }
+/* Fix fixed header covering section headings */
+section {
+  scroll-margin-top: 90px;
+}
